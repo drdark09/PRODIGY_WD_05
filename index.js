@@ -1,95 +1,51 @@
-* {
-  margin: 0;
-  padding: 0;
-  font-family: "Poppins", sans-serif;
-  box-sizing: border-box;
+import { API_KEY } from './config.js';
+
+const searchInput = document.querySelector('.search input')
+const searchBtn = document.querySelector('.search button')
+
+async function checkWeather(city) {
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`)
+
+    if (response.status == 404) {
+        document.querySelector('.error').style.display = 'block'
+
+        document.querySelector('.temp').innerText = "NA"
+        document.querySelector('.city').innerText = "Invalid"
+        document.querySelector('.humidity').innerText = "NA"
+        document.querySelector('.wind').innerText = "NA"
+
+    } else {
+        var data = await response.json();
+
+        document.querySelector('.temp').innerText = Math.round(data.main.temp) + "°C";
+        document.querySelector('.city').innerText = data.name;
+        document.querySelector('.humidity').innerText = data.main.humidity + "%";
+        document.querySelector('.wind').innerText = data.wind.speed + " Km/h";
+        console.log(data);
+
+        if (data.weather[0].main == "Clouds") {
+            document.querySelector('.weather-icon').src = "./images/clouds.png"
+        } else if (data.weather[0].main == "Clear") {
+            document.querySelector('.weather-icon').src = "./images/clear.png"
+        } else if (data.weather[0].main == "Drizzle") {
+            document.querySelector('.weather-icon').src = "./images/drizzle.png"
+        } else if (data.weather[0].main == "Humidity") {
+            document.querySelector('.weather-icon').src = "./images/humidity.png"
+        } else if (data.weather[0].main == "Mist") {
+            document.querySelector('.weather-icon').src = "./images/mist.png"
+        } else if (data.weather[0].main == "Rain") {
+            document.querySelector('.weather-icon').src = "./images/rain.png"
+        } else if (data.weather[0].main == "Snow") {
+            document.querySelector('.weather-icon').src = "./images/snow.png"
+        }
+
+        document.querySelector('.error').style.display = 'none'
+
+    }
+
 }
 
-body {
-  background-color: #222;
-}
+searchBtn.addEventListener('click', function () {
 
-.card {
-  width: 90%;
-  max-width: 470px;
-  background: linear-gradient(135deg, #9339a9, #5b548a);
-  color: #fff;
-  margin: 100px auto 0;
-  border-radius: 20px;
-  padding: 40px 35px;
-  text-align: center;
-}
-
-.search {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.search input {
-  border: none;
-  outline: none;
-  background: #ebfffc;
-  color: #555;
-  padding: 10px 25px;
-  height: 60px;
-  border-radius: 30px;
-  flex: 1;
-  margin-right: 16px;
-  font-size: 18px;
-}
-
-.search button {
-  border: none;
-  outline: none;
-  background: #ebfffc;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  cursor: pointer;
-}
-
-.search button img {
-  width: 23px;
-}
-
-.weather-icon {
-  width: 170px;
-  margin-top: 30px;
-}
-
-.weather h1 {
-  font-size: 80px;
-  font-weight: 500;
-}
-
-.weather h2 {
-  font-size: 45px;
-  font-weight: 400;
-  margin-top: -10px;
-}
-
-.details {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0px 20px;
-  margin-top: 50px;
-}
-
-.col {
-  display: flex;
-  align-items: center;
-  text-align: left;
-}
-
-.col img {
-  width: 40px;
-  margin-right: 10px;
-}
-
-.humidity,
-.wind {
-  font-size: 28px;
-}
+    checkWeather(searchInput.value)
+})
